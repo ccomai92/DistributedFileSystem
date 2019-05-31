@@ -1,0 +1,6 @@
+# Exclude compiled files
+*.class
+
+# Exclude hidden files
+*#*
+*~*
