@@ -287,12 +287,10 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          */
         public boolean upload(String client, FileContents contents) {
             // todo: validation check
+            // todo: delete
+            System.out.println("upload is called");
 
             try {
-
-                // todo: delete
-                System.out.println("upload is called");
-
                 // invalidate all readers' cache
                 ClientInterface clientInterface = null;
                 for (String reader : readers) {
