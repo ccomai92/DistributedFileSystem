@@ -226,6 +226,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             // todo: suspend at this moment (wait), and once gets the owner ship,
                             currentOwner.writeback();
 
+                            wait();
+
                             // wait around here, and once owner client upload the file,
                             //change the owner.
                             owner = client;
