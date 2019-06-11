@@ -280,6 +280,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // state transition
                 switch (state) {
                     case WRITE_SHARED:
+                        System.out.println("From write shared to not_share, and writing file");
                         state = State.NOT_SHARED;
                         owner = null;
                         // write file to the system.
