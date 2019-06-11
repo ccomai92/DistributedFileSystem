@@ -117,6 +117,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         private Vector<String> readers = null;
         private String owner = null;
         private int port = 0;
+        private Object monitor = null;
 
         public File(String filename, int port) {
             this.state = State.NOT_SHARED;
@@ -124,6 +125,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             readers = new Vector<String>();
             owner = null;
             this.port = port;
+            monitor = new Object();
 
             // read file contents from the local disk
             bytes = readFile();
@@ -198,7 +200,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-                synchronized (state) {
+                synchronized (monitor) {
                     if (state == State.OWNERSHIP_CHANGE) {
                         // todo: delete later
                         System.out.println("wait state for ownershiop change");
@@ -266,7 +268,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
-                synchronized (state) {
+                synchronized (monitor) {
                     if (previousState == State.OWNERSHIP_CHANGE) {
                         System.out.println("previous state is ownership chagne");
 //                        state.notify();
@@ -316,7 +318,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         System.out.println("From write shared to not_share, and writing file");
                         state = State.NOT_SHARED;
                         owner = null;
-                        // write file to the system.
                         writeFile();
                         break;
                     case OWNERSHIP_CHANGE:
@@ -325,11 +326,14 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         notify();
                         break;
                 }
+
+
+
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-            return true;
         }
 
         /**
