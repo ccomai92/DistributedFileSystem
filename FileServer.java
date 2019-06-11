@@ -65,7 +65,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    public synchronized FileContents download(String client, String filename, String mode) throws RemoteException {
+    public FileContents download(String client, String filename, String mode) throws RemoteException {
 
         // todo: filename error checking should be done here
 
@@ -89,16 +89,18 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         return file.download(client, mode);
     }
 
-    public synchronized boolean upload(String client, String filename, FileContents contents) throws RemoteException {
+    public boolean upload(String client, String filename, FileContents contents) throws RemoteException {
         System.out.println("upload invoked");
         File file = null;
 
         // file the file to upload
-        for (File f : files) {
-            if (filename.equals(f.filename)) {
-                System.out.println("Trying to find " + filename + " now: " + f.filename);
-                file = f;
-                break;
+        synchronized (files) {
+            for (File f : files) {
+                if (filename.equals(f.filename)) {
+                    System.out.println("Trying to find " + filename + " now: " + f.filename);
+                    file = f;
+                    break;
+                }
             }
         }
 
@@ -185,7 +187,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         public synchronized FileContents download(String client, String mode) {
             try {
 
-                if(mode.equals("r")) {
+                if (mode.equals("r")) {
                     System.out.println("read mode");
                 } else if (mode.equals(("w"))) {
                     System.out.println("write mode");
@@ -333,7 +335,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 }
 
 
-
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -342,7 +343,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         /**
-         *
          * @param name
          * @return
          */
