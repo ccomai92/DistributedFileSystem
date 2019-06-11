@@ -96,7 +96,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         // file the file to upload
         for (File f : files) {
             if (filename.equals(f.filename)) {
-                System.out.println("Trying to find " + filename + " now: f.filename");
+                System.out.println("Trying to find " + filename + " now: " + f.filename);
                 file = f;
                 break;
             }
@@ -251,8 +251,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                             // if it is the owner, it will send always true....
                             // todo: suspend at this moment (wait), and once gets the ownership,
+                            System.out.println("write shared on write mode");
                             currentOwner.writeback();
                             wait();
+
+                            System.out.println("ws write mode lock releaseds");
 
                             // wait around here, and once owner client upload the file,
                             //change the owner.
@@ -265,6 +268,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 FileContents contents = new FileContents(bytes);
                 synchronized (state) {
                     if (previousState == State.OWNERSHIP_CHANGE) {
+                        System.out.println("previous state is ownership chagne");
                         state.notify();
                     }
                 }
