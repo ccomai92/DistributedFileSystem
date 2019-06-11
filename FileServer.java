@@ -197,11 +197,13 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-                if (state == State.OWNERSHIP_CHANGE) {
-                    // todo: delete later
-                    System.out.println("wait state for ownershiop change");
-                    state.wait();
-                    System.out.println("Wait state released");
+                synchronized (state) {
+                    if (state == State.OWNERSHIP_CHANGE) {
+                        // todo: delete later
+                        System.out.println("wait state for ownershiop change");
+                        state.wait();
+                        System.out.println("Wait state released");
+                    }
                 }
 
                 State previousState = state;
@@ -260,9 +262,12 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
-                if (previousState == State.OWNERSHIP_CHANGE) {
-                    state.notifyAll();
+                synchronized (state) {
+                    if (previousState == State.OWNERSHIP_CHANGE) {
+                        state.notifyAll();
+                    }
                 }
+
                 return contents;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -324,6 +329,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             return true;
         }
 
+        /**
+         *
+         * @param name
+         * @return
+         */
         public String getName(String name) {
             return this.filename;
         }
