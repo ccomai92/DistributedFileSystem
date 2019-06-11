@@ -247,7 +247,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             ClientInterface currentOwner = (ClientInterface) Naming.lookup("rmi://" + owner + ":" + port + "/fileclient");
 
                             // if it is the owner, it will send always true....
-                            // todo: suspend at this moment (wait), and once gets the owner ship,
+                            // todo: suspend at this moment (wait), and once gets the ownership,
                             currentOwner.writeback();
                             wait();
 
@@ -275,7 +275,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @param contents
          * @return
          */
-        public boolean upload(String client, FileContents contents) {
+        public synchronized boolean upload(String client, FileContents contents) {
             // todo: validation check
 
             try {
