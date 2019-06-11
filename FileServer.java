@@ -24,30 +24,31 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
     }
 
     public static void main(String[] args) {
-        int port = Integer.parseInt(args[0]);
         try {
             if (args.length != 1) {
                 String[] message = new String[1];
                 message[0] = "new String[0] = usage: java Server port";
                 throw new IllegalArgumentException("new String[0] = usage: java Server port");
             }
-            if (port < 5001 || port > 65535)
+
+            // Now get the port number
+            int port = Integer.parseInt(args[0]);
+
+            if (port < 5001 || port > 65535) {
                 throw new PortUnreachableException("port range should be 5001 ~ 65535");
+            }
+
+            startRegistry(port);
+            FileServer serverObject = new FileServer(port);
+            Naming.rebind("rmi://localhost:" + port + "/fileserver", serverObject);
+            System.out.println("Server ready.");
+
         } catch (PortUnreachableException e) {
             e.printStackTrace();
             System.exit(-1);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             System.exit(-1);
-        }
-
-        try {
-            startRegistry(port);
-            FileServer serverObject = new FileServer(port);
-            Naming.rebind("rmi://localhost:" + port + "/fileserver", serverObject);
-            System.out.println("Server ready.");
-
-
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -94,7 +95,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
         // file the file to upload
         for (File f : files) {
-            if(filename.equals(f.filename)) {
+            if (filename.equals(f.filename)) {
                 file = f;
                 break;
             }
@@ -182,7 +183,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // state transition
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
-                while (state == State.OWNERSHIP_CHANGE) {
+
+                if (state == State.OWNERSHIP_CHANGE) {
+                    state.wait();
                 }
 
                 State previousState = state;
@@ -236,7 +239,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
                 if (previousState == State.OWNERSHIP_CHANGE) {
-                    // todo: need to update new owner.
+                    state.notifyAll();
                 }
                 return contents;
             } catch (Exception e) {
