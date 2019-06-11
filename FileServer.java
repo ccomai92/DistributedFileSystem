@@ -177,25 +177,34 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @return
          */
         public FileContents download(String client, String mode) {
-
             try {
+
+                // todo: remove it later
+                System.out.println("download is called from a client");
+
                 // todo: more invalid file check is required. (mode) (filename) (low)
                 // state transition
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
                 if (state == State.OWNERSHIP_CHANGE) {
+                    // todo: delete later
+                    System.out.println("wait state for ownershiop change");
                     state.wait();
+                    System.out.println("Wait state released");
                 }
 
                 State previousState = state;
                 int error = 0;
                 switch (state) {
                     case NOT_SHARED:
+                        // todo: delete
+                        System.out.println("download state not shared");
                         if (mode.equals("r")) {
                             state = State.READ_SHARED;
                             readers.add(client);
                         } else if (mode.equals("w")) {
+
                             state = State.WRITE_SHARED;
                             if (owner != null)
                                 throw new SyncFailedException("Critical error. previous owner exist in NOT_SHARED file");
@@ -204,6 +213,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         }
                         break;
                     case READ_SHARED:
+                        // todo: delete
+                        System.out.println("download state read shared");
                         removeReader(client);
                         if (mode.equals("r"))
                             readers.add(client);
@@ -216,6 +227,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         }
                         break;
                     case WRITE_SHARED:
+                        // todo: delete
+                        System.out.println("download state write shared");
                         removeReader(client);
                         if (mode.equals("r"))
                             readers.add(client);
@@ -257,12 +270,15 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             // todo: validation check
 
             try {
+
+                // todo: delete
+                System.out.println("upload is called");
+
                 // invalidate all readers' cache
                 ClientInterface clientInterface = null;
                 for (String reader : readers) {
 
                     // RMI registration;
-
                     clientInterface = (ClientInterface) Naming.lookup("rmi://" + reader + ":" + port + "/fileclient");
                     if (clientInterface != null) {
                         clientInterface.invalidate();
