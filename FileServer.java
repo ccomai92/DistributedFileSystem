@@ -181,7 +181,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
             try {
                 // todo: more invalid file check is required. (mode) (filename) (low)
-
                 // state transition
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
