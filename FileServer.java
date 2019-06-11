@@ -80,7 +80,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         // file not found, and add file to the list
-        if (fileContent == null) {
+        if (file == null) {
             file = new File(filename, this.port);
             this.files.add(file);
         }
