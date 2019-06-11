@@ -179,6 +179,16 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         public FileContents download(String client, String mode) {
             try {
 
+                if(mode.equals("r")) {
+                    System.out.println("read mode");
+                } else if (mode.equals(("w"))) {
+                    System.out.println("write mode");
+                } else {
+                    System.err.println("mode error with " + mode);
+                    return null;
+                }
+
+
                 // todo: remove it later
                 System.out.println("download is called from a client");
 
