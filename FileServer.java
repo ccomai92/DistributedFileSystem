@@ -102,6 +102,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             }
         }
 
+        System.out.println("escaped for loop");
+        System.out.println("filename: " + file.filename);
+
         return (file != null) && file.upload(client, contents);
     }
 
