@@ -52,7 +52,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         try {
 			startRegistry(port);
 			FileServer serverObject = new FileServer();
-			Naming.rebind("rmi://localhost:" + port + "/server", serverObject);
+			Naming.rebind("rmi://localhost:" + port + "/fileserver", serverObject);
             System.out.println("Server ready.");
             
             

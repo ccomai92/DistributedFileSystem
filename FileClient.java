@@ -140,6 +140,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
                 System.out.println("The file does not exist");
                 return false;
             }
+
+	    this.file.setWritable(true, true);            // chmod 600
     
             // write requested file contents into the cache file.
             FileOutputStream tempFileWriter =  new FileOutputStream(this.file);
@@ -148,8 +150,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
 
             this.fileName = fileName; 
             if (mode.equals("w")) {
-                this.file.setWritable(true);                // chmod 600
-                this.currentState = State.WRITE_OWNED;      // write owned state
+                // already writable mode, do not have to change permission
+		this.currentState = State.WRITE_OWNED;      // write owned state
                 this.accessMode = mode;                      // access mode = w
             } else {
                 this.file.setReadOnly();                    // chmod 400
@@ -230,7 +232,7 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
         try {
             // Find server object 
             ServerInterface serverObject = (ServerInterface)
-                 Naming.lookup("rmi://" + serverIp + ":" + port + "/server");
+                 Naming.lookup("rmi://" + serverIp + ":" + port + "/fileserver");
 
             // start rmi for client object
             startRegistry(port);
