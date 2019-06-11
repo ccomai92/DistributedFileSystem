@@ -65,7 +65,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    public FileContents download(String client, String filename, String mode) throws RemoteException {
+    public synchronized FileContents download(String client, String filename, String mode) throws RemoteException {
 
         // todo: filename error checking should be done here
 
@@ -89,7 +89,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         return file.download(client, mode);
     }
 
-    public boolean upload(String client, String filename, FileContents contents) throws RemoteException {
+    public synchronized boolean upload(String client, String filename, FileContents contents) throws RemoteException {
         System.out.println("upload invoked");
         File file = null;
 
