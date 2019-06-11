@@ -96,6 +96,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         // file the file to upload
         for (File f : files) {
             if (filename.equals(f.filename)) {
+                System.out.println("Trying to find " + filename + " now: f.filename");
                 file = f;
                 break;
             }
@@ -264,7 +265,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 FileContents contents = new FileContents(bytes);
                 synchronized (state) {
                     if (previousState == State.OWNERSHIP_CHANGE) {
-                        state.notifyAll();
+                        state.notify();
                     }
                 }
 
