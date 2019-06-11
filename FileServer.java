@@ -176,7 +176,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @param mode
          * @return
          */
-        public FileContents download(String client, String mode) {
+        public synchronized FileContents download(String client, String mode) {
             try {
 
                 if(mode.equals("r")) {
@@ -249,7 +249,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             // if it is the owner, it will send always true....
                             // todo: suspend at this moment (wait), and once gets the owner ship,
                             currentOwner.writeback();
-
                             wait();
 
                             // wait around here, and once owner client upload the file,
