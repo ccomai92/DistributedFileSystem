@@ -27,33 +27,33 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
 
     public FileClient(ServerInterface serverObject, String localHost) throws Exception {
         
-		// initialize the local cache file path: /tmp/username.txt)
-		this.cacheFile = "/tmp/" + System.getProperty("user.name") + ".txt";
-		// System.out.println(System.getProperty("user.name"));
-        
-		// initialize the local cache file with the initialized path
-		this.file = new File(this.cacheFile);
-		
-		// creating new file if it does not exist in the path 
+	// initialize the local cache file path: /tmp/username.txt)
+	this.cacheFile = "/tmp/" + System.getProperty("user.name") + ".txt";
+	// System.out.println(System.getProperty("user.name"));
+
+	// initialize the local cache file with the initialized path
+	this.file = new File(this.cacheFile);
+
+	// creating new file if it does not exist in the path 
         if (!this.file.exists()) {
-			this.file.createNewFile();
-			this.file.setWritable(true, true);		// chmod 600
-		} 
-		
-		// init serverObject for rmi calls
+		this.file.createNewFile();
+		this.file.setWritable(true, true);		// chmod 600
+	} 
+
+	// init serverObject for rmi calls
         this.serverObject = serverObject;
 		
-		// init the name of loal host 
+	// init the name of loal host 
         this.localHost = localHost;
 		
-		// init current state (no file) 
+	// init current state (no file) 
         this.currentState = State.INVALID;
 		
-		// no file in the cache, so no name
+	// no file in the cache, so no name
         this.fileName = "";
     }
 
-	// interact with the user 
+// interact with the user 
     public void userPrompt() throws Exception {
         Scanner input = new Scanner(System.in);
         String fileName; 
