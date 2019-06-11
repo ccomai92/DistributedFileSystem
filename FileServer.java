@@ -285,7 +285,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @param contents
          * @return
          */
-        public synchronized boolean upload(String client, FileContents contents) {
+        public boolean upload(String client, FileContents contents) {
             // todo: validation check
 
             try {
