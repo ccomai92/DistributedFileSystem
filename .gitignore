@@ -5,3 +5,6 @@
 *#*
 *~*
 *.*
+
+# exclude intelliJ out file
+out/
