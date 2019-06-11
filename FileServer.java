@@ -1,5 +1,3 @@
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
 import java.io.*;
 import java.net.PortUnreachableException;
 import java.rmi.Naming;
@@ -31,14 +29,14 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             if (args.length != 1) {
                 String[] message = new String[1];
                 message[0] = "new String[0] = usage: java Server port";
-                throw new InvalidArgumentException(message);
+                throw new IllegalArgumentException("new String[0] = usage: java Server port");
             }
             if (port < 5001 || port > 65535)
                 throw new PortUnreachableException("port range should be 5001 ~ 65535");
         } catch (PortUnreachableException e) {
             e.printStackTrace();
             System.exit(-1);
-        } catch (InvalidArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             System.exit(-1);
         }
