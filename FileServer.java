@@ -281,7 +281,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
 
-                if (previousState == State.OWNERSHIP_CHANGE) {
+                if (previousState == State.WRITE_SHARED) {
                     synchronized (monitor1) {
                         monitor1.notify();
                     }
