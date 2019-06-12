@@ -204,7 +204,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-                synchronized (monitor2) {
+                synchronized (monitor1) {
                     if (state == State.OWNERSHIP_CHANGE) {
                         // todo: delete later
                         System.out.println("wait state for ownershiop change");
