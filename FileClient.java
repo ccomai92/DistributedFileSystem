@@ -93,9 +93,9 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             if (input.nextLine().toLowerCase().startsWith("n")) {
                 if (this.currentState == State.WRITE_OWNED) {
                     System.out.println("Latest change has been uploaded to the server");
-		    this.saveStateToServer();
+		            this.saveStateToServer();
                 }
-		System.out.println("Program Closed");
+		        System.out.println("Program Closed");
                 System.exit(0);
             }
         }
