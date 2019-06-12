@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Queue;
 import java.util.Vector;
 
 
@@ -120,7 +119,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         private Vector<String> readers = null;
         private String owner = null;
         private int port = 0;
-        private Object monitor = null;
+        private Object monitor1 = null;
+        private Object monitor2 = null;
 
         public File(String filename, int port) {
             this.state = State.NOT_SHARED;
@@ -128,7 +128,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
             readers = new Vector<String>();
             owner = null;
             this.port = port;
-            monitor = new Object();
+            monitor1 = new Object();
+            monitor2 = new Object();
 
             // read file contents from the local disk
             bytes = readFile();
@@ -182,7 +183,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @param mode
          * @return
          */
-        public synchronized FileContents download(String client, String mode) {
+        public FileContents download(String client, String mode) {
             try {
 
                 if (mode.equals("r")) {
@@ -203,12 +204,12 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-//                synchronized (monitor) {
+//                synchronized (monitor1) {
 //                    if (state == State.OWNERSHIP_CHANGE) {
 //                        // todo: delete later
 //                        System.out.println("wait state for ownershiop change");
 ////                        state.wait();
-//                        monitor.wait();
+//                        monitor1.wait();
 //                        System.out.println("Wait state released");
 //                    }
 //                }
@@ -246,8 +247,8 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         }
                         break;
                     case OWNERSHIP_CHANGE:
-                        synchronized (monitor) {
-                            monitor.wait();
+                        synchronized (monitor1) {
+                            monitor1.wait();
                         }
                     case WRITE_SHARED:
                         // todo: delete
@@ -264,7 +265,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             // if it is the owner, it will send always true....
                             // todo: suspend at this moment (wait), and once gets the ownership,
                             System.out.println("write shared on write mode");
-                            wait();
+                            synchronized (monitor2) {
+                                monitor2.wait();
+                            }
                             System.out.println("ws write mode lock releaseds");
 
                             // wait around here, and once owner client upload the file,
@@ -278,7 +281,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 FileContents contents = new FileContents(bytes);
 
                 if(previousState == State.OWNERSHIP_CHANGE) {
-                    monitor.notify();
+                    monitor1.notify();
                 }
 
 
@@ -295,7 +298,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @param contents
          * @return
          */
-        public synchronized boolean upload(String client, FileContents contents) {
+        public boolean upload(String client, FileContents contents) {
             // todo: validation check
             // todo: delete
             System.out.println("upload is called");
@@ -331,7 +334,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                     case OWNERSHIP_CHANGE:
                         state = State.WRITE_SHARED;
                         owner = client;
-                        notify();
+                        synchronized (monitor2) {
+                            monitor2.notify();
+                        }
                         break;
                 }
 
