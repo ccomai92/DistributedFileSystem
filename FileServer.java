@@ -247,9 +247,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         }
                         break;
                     case OWNERSHIP_CHANGE:
+                        System.out.println("Owner change required");
                         synchronized (monitor1) {
                             monitor1.wait();
                         }
+                        System.out.println("");
                     case WRITE_SHARED:
                         // todo: delete
                         System.out.println("download state write shared");
