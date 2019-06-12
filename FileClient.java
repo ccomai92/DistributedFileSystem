@@ -106,7 +106,11 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
                 // writeowned
                 if (this.currentState == State.WRITE_OWNED) {
                     FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
-                    this.serverObject.upload(this.localHost, this.fileName, currentContent);
+                    System.out.println("uplodaing");
+                    boolean success;
+                    success = this.serverObject.upload(this.localHost, this.fileName, currentContent);
+
+                    System.out.println("upload success? " + success);
 
                     // set state to invalid so client can download desired file from server
                     this.currentState = State.INVALID;
