@@ -89,9 +89,11 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             completeSession();
 
             // prompt user for continuation
-            System.out.println("Continue DFS? (y\n)");
-            if (input.nextLine().toLowerCase().startsWith("y")) {
-                this.saveStateToServer();
+            System.out.println("Continue DFS? (y | n)");
+            if (input.nextLine().toLowerCase().startsWith("n")) {
+                if (this.currentState == State.WRITE_OWNED) {
+                    this.saveStateToServer();
+                }
                 return;
             }
         }
