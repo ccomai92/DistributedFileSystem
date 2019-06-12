@@ -273,13 +273,10 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
-//                synchronized (monitor) {
-//                    if (previousState == State.OWNERSHIP_CHANGE) {
-//                        System.out.println("previous state is ownership chagne");
-////                        state.notify();
-//                        monitor.notify();
-//                    }
-//                }
+                if (previousState == State.OWNERSHIP_CHANGE) {
+                    notify();
+                    System.out.println("previous state is ownership chagne");
+                }
 
                 return contents;
             } catch (Exception e) {
@@ -289,7 +286,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         /**
-         *
          * @param client
          * @param contents
          * @return
@@ -343,7 +339,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         /**
-         *
          * @param name
          * @return
          */
