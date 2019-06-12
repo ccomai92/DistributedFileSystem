@@ -24,7 +24,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
     private String accessMode;
     private State currentState;
 
-    public FileClient(ServerInterface serverObject, String localHost) throws Exception {
+    public FileClient(ServerInterface serverObject, String localHost)
+            throws Exception {
 
         // initialize the local cache file path: /tmp/username.txt)
         this.cacheFile = "/tmp/" + System.getProperty("user.name") + ".txt";
@@ -92,7 +93,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             System.out.println("Continue DFS? (y | n)");
             if (input.nextLine().toLowerCase().startsWith("n")) {
                 if (this.currentState == State.WRITE_OWNED) {
-                    System.out.println("Latest change has been uploaded to the server");
+                    System.out.println(
+                            "Latest change has been uploaded to the server");
 		            this.saveStateToServer();
                 }
 		        System.out.println("Program Closed");
@@ -102,7 +104,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
     }
 
     private void saveStateToServer() throws Exception {
-        FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
+        FileContents currentContent =
+                new FileContents(Files.readAllBytes(this.file.toPath()));
         this.serverObject.upload(this.localHost, this.fileName, currentContent);
     }
 
@@ -113,18 +116,24 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
 
             // if local cache is not requested file,
             if (!this.fileName.equals(fileName)) {
-                // files don't match, upload current file content to server if state is
+                // files don't match,
+                // upload current file content to server if state is
                 // writeowned
                 if (this.currentState == State.WRITE_OWNED) {
-                    FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
-                    this.serverObject.upload(this.localHost, this.fileName, currentContent);
+                    FileContents currentContent =
+                            new FileContents(
+                                    Files.readAllBytes(this.file.toPath()));
+                    this.serverObject.upload(
+                            this.localHost, this.fileName, currentContent);
 
-                    // set state to invalid so client can download desired file from server
+                    // set state to invalid
+                    // so client can download desired file from server
                     this.currentState = State.INVALID;
                 }
             }
 
-            // check state of cache to determine if client downloads server file or not
+            // check state of cache
+            // to determine if client downloads server file or not
             switch (this.currentState) {
 
             case INVALID:
@@ -193,7 +202,8 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
         try {
 
             // downalod specified file in mode
-            FileContents result = this.serverObject.download(this.localHost, fileName, mode);
+            FileContents result =
+                    this.serverObject.download(this.localHost, fileName, mode);
 
             // no file exists
             if (result == null) {
@@ -245,8 +255,11 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             if (this.currentState == State.RELEASE_OWNERSHIP) {
 
                 // upload changes to the server
-                FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
-                this.serverObject.upload(this.localHost, this.fileName, currentContent);
+                FileContents currentContent =
+                        new FileContents(
+                                Files.readAllBytes(this.file.toPath()));
+                this.serverObject.upload(
+                        this.localHost, this.fileName, currentContent);
 
                 // set state to read_shared
                 this.currentState = State.READ_SHARED;
