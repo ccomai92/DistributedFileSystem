@@ -97,7 +97,7 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
         }
     }
 
-    private void saveStateToServer() {
+    private void saveStateToServer() throws Exception {
         FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
         this.serverObject.upload(this.localHost, this.fileName, currentContent);
     }
