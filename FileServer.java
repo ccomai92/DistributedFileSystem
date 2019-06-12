@@ -245,8 +245,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                                 owner = client;
                         }
                         break;
-                    case WRITE_SHARED:
                     case OWNERSHIP_CHANGE:
+                        synchronized (monitor) {
+                            monitor.wait();
+                        }
+                    case WRITE_SHARED:
                         // todo: delete
                         System.out.println("download state write shared");
                         removeReader(client);
@@ -273,6 +276,12 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
+
+                if(previousState == State.OWNERSHIP_CHANGE) {
+                    monitor.notify();
+                }
+
+
 
                 return contents;
             } catch (Exception e) {
