@@ -94,13 +94,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         File file = null;
 
         // file the file to upload
-        synchronized (files) {
-            for (File f : files) {
-                if (filename.equals(f.filename)) {
-                    System.out.println("Trying to find " + filename + " now: " + f.filename);
-                    file = f;
-                    break;
-                }
+        for (File f : files) {
+            if (filename.equals(f.filename)) {
+                System.out.println("Trying to find " + filename + " now: " + f.filename);
+                file = f;
+                break;
             }
         }
 
@@ -205,15 +203,15 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-                synchronized (monitor) {
-                    if (state == State.OWNERSHIP_CHANGE) {
-                        // todo: delete later
-                        System.out.println("wait state for ownershiop change");
-//                        state.wait();
-                        monitor.wait();
-                        System.out.println("Wait state released");
-                    }
-                }
+//                synchronized (monitor) {
+//                    if (state == State.OWNERSHIP_CHANGE) {
+//                        // todo: delete later
+//                        System.out.println("wait state for ownershiop change");
+////                        state.wait();
+//                        monitor.wait();
+//                        System.out.println("Wait state released");
+//                    }
+//                }
 
                 State previousState = state;
                 int error = 0;
@@ -256,7 +254,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         else if (mode.equals("w")) {
                             state = State.OWNERSHIP_CHANGE;
                             ClientInterface currentOwner = (ClientInterface) Naming.lookup("rmi://" + owner + ":" + port + "/fileclient");
-                            currentOwner.writeback();
+                            currentOwner.writeback(); // requesting write back from the client
 
                             // if it is the owner, it will send always true....
                             // todo: suspend at this moment (wait), and once gets the ownership,
@@ -274,13 +272,13 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
-                synchronized (monitor) {
-                    if (previousState == State.OWNERSHIP_CHANGE) {
-                        System.out.println("previous state is ownership chagne");
-//                        state.notify();
-                        monitor.notify();
-                    }
-                }
+//                synchronized (monitor) {
+//                    if (previousState == State.OWNERSHIP_CHANGE) {
+//                        System.out.println("previous state is ownership chagne");
+////                        state.notify();
+//                        monitor.notify();
+//                    }
+//                }
 
                 return contents;
             } catch (Exception e) {
@@ -290,6 +288,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         /**
+         *
          * @param client
          * @param contents
          * @return
@@ -343,6 +342,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
 
         /**
+         *
          * @param name
          * @return
          */
