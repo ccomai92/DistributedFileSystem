@@ -282,7 +282,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 FileContents contents = new FileContents(bytes);
 
                 if(previousState == State.OWNERSHIP_CHANGE) {
-                    monitor1.notify();
+                    synchronized (monitor1) {
+                        monitor1.notify();
+                    }
                 }
 
 
