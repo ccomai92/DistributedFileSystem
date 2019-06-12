@@ -246,6 +246,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         }
                         break;
                     case WRITE_SHARED:
+                    case OWNERSHIP_CHANGE:
                         // todo: delete
                         System.out.println("download state write shared");
                         removeReader(client);
@@ -268,29 +269,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             owner = client;
                         }
                         break;
-                    case OWNERSHIP_CHANGE:
-                        // todo: owner change implementation
-                        // todo: delete
-                        System.out.println("download state ownership change");
-                        removeReader(client);
-                        if (mode.equals("r"))
-                            readers.add(client);
-                        else if(mode.equals("w")) {
-                            state = State.OWNERSHIP_CHANGE;
-                            ClientInterface currentOwner = (ClientInterface) Naming.lookup("rmi://" + owner + ":" + port + "/fileclient");
-                            currentOwner.writeback(); // requesting write back from the client
-
-                            // if it is the owner, it will send always true....
-                            // todo: suspend at this moment (wait), and once gets the ownership,
-                            System.out.println("owership shared on write mode");
-                            wait();
-
-                            System.out.println("os write mode lock releaseds");
-
-                            // wait around here, and once owner client upload the file,
-                            //change the owner.
-                            owner = client;
-                        }
                 }
 
                 // retrieve file contents from cache
