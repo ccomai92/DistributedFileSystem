@@ -254,19 +254,19 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 //                        System.out.println("write request unlocked");
                     case WRITE_SHARED:
                         // todo: delete
-                        System.out.println("download state write shared");
+//                        System.out.println("download state write shared");
                         removeReader(client);
                         if (mode.equals("r"))
                             readers.add(client);
                         else if (mode.equals("w")) {
                             state = State.OWNERSHIP_CHANGE;
                             ClientInterface currentOwner = (ClientInterface) Naming.lookup("rmi://" + owner + ":" + port + "/fileclient");
-                            System.out.println("from " + owner + "write back is requested");
+                            System.out.println("from " + owner + " write back is requested");
                             currentOwner.writeback(); // requesting write back from the client
 
                             // if it is the owner, it will send always true....
                             // todo: suspend at this moment (wait), and once gets the ownership,
-                            System.out.println("write shared on write mode");
+//                            System.out.println("write shared on write mode");
                             synchronized (monitor2) {
                                 monitor2.wait();
                             }
@@ -281,12 +281,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // retrieve file contents from cache
                 FileContents contents = new FileContents(bytes);
 
-                if(previousState == State.OWNERSHIP_CHANGE) {
+                if (previousState == State.OWNERSHIP_CHANGE) {
                     synchronized (monitor1) {
                         monitor1.notify();
                     }
                 }
-
 
 
                 return contents;
@@ -329,7 +328,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // state transition
                 switch (state) {
                     case WRITE_SHARED:
-                        System.out.println("From write shared to not_share, and writing file");
+//                        System.out.println("From write shared to not_share, and writing file");
                         state = State.NOT_SHARED;
                         owner = null;
                         writeFile();
