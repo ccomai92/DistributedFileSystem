@@ -91,10 +91,17 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             // prompt user for continuation
             System.out.println("Continue DFS? (y\n)");
             if (input.nextLine().toLowerCase().startsWith("y")) {
+                this.saveStateToServer();
                 return;
             }
         }
     }
+
+    private void saveStateToServer() {
+        FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
+        this.serverObject.upload(this.localHost, this.fileName, currentContent);
+    }
+
 
     private boolean openFile(String fileName, String mode) {
         try {
