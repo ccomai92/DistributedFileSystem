@@ -197,22 +197,22 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
 
                 // todo: remove it later
-                System.out.println("download is called from a client");
+//                System.out.println("download is called from a client");
 
                 // todo: more invalid file check is required. (mode) (filename) (low)
                 // state transition
                 //Ownership change state, when the ownership is released,
                 // todo: need to implement notify mechanism
 
-//                synchronized (monitor1) {
-//                    if (state == State.OWNERSHIP_CHANGE) {
-//                        // todo: delete later
-//                        System.out.println("wait state for ownershiop change");
-////                        state.wait();
-//                        monitor1.wait();
-//                        System.out.println("Wait state released");
-//                    }
-//                }
+                synchronized (monitor2) {
+                    if (state == State.OWNERSHIP_CHANGE) {
+                        // todo: delete later
+                        System.out.println("wait state for ownershiop change");
+//                        state.wait();
+                        monitor2.wait();
+                        System.out.println("Wait state released");
+                    }
+                }
 
                 State previousState = state;
                 int error = 0;
@@ -246,12 +246,12 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                                 owner = client;
                         }
                         break;
-                    case OWNERSHIP_CHANGE:
-                        System.out.println("Owner change required");
-                        synchronized (monitor1) {
-                            monitor1.wait();
-                        }
-                        System.out.println("");
+//                    case OWNERSHIP_CHANGE:
+//                        System.out.println("Owner change required");
+//                        synchronized (monitor1) {
+//                            monitor1.wait();
+//                        }
+//                        System.out.println("write request unlocked");
                     case WRITE_SHARED:
                         // todo: delete
                         System.out.println("download state write shared");
@@ -270,7 +270,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             synchronized (monitor2) {
                                 monitor2.wait();
                             }
-                            System.out.println("ws write mode lock releaseds");
 
                             // wait around here, and once owner client upload the file,
                             //change the owner.
