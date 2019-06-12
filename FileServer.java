@@ -7,21 +7,26 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
-
+/**
+ *
+ */
 public class FileServer extends UnicastRemoteObject implements ServerInterface {
     private Vector<File> files = null;
     private int port = 0;
 
-    // Better to exclude constructor which we would never use.
-//    public FileServer() throws RemoteException {
-//        this.files = new Vector<Cache>();
-//    }
 
+    /**
+     * @param port
+     * @throws RemoteException
+     */
     public FileServer(int port) throws RemoteException {
         this.port = port;
         this.files = new Vector<>();
     }
 
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             if (args.length != 1) {
@@ -55,6 +60,10 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
     }
 
+    /**
+     * @param port
+     * @throws RemoteException
+     */
     private static void startRegistry(int port) throws RemoteException {
         try {
             Registry registry = LocateRegistry.getRegistry(port);
@@ -64,6 +73,13 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
+    /**
+     * @param client
+     * @param filename
+     * @param mode
+     * @return
+     * @throws RemoteException
+     */
     public FileContents download(String client, String filename, String mode) throws RemoteException {
 
         // todo: filename error checking should be done here
@@ -88,6 +104,13 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         return file.download(client, mode);
     }
 
+    /**
+     * @param client
+     * @param filename
+     * @param contents
+     * @return
+     * @throws RemoteException
+     */
     public boolean upload(String client, String filename, FileContents contents) throws RemoteException {
         System.out.println("upload invoked");
         File file = null;
@@ -108,9 +131,12 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
     }
 
     enum State {
-        NOT_SHARED, READ_SHARED, WRITE_SHARED, OWNERSHIP_CHANGE;
+        NOT_SHARED, READ_SHARED, WRITE_SHARED, OWNERSHIP_CHANGE
     }
 
+    /**
+     *
+     */
     private class File {
 
         private State state;
@@ -122,6 +148,10 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
         private Object monitor1 = null;
         private Object monitor2 = null;
 
+        /**
+         * @param filename
+         * @param port
+         */
         public File(String filename, int port) {
             this.state = State.NOT_SHARED;
             this.filename = filename;
@@ -195,27 +225,16 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                     return null;
                 }
 
-
-                // todo: remove it later
-//                System.out.println("download is called from a client");
-
-                // todo: more invalid file check is required. (mode) (filename) (low)
-                // state transition
-                //Ownership change state, when the ownership is released,
-                // todo: need to implement notify mechanism
-
                 synchronized (monitor1) {
                     if (state == State.OWNERSHIP_CHANGE) {
                         // todo: delete later
                         System.out.println("wait state for ownershiop change");
-//                        state.wait();
                         monitor1.wait();
                         System.out.println("Wait state released");
                     }
                 }
 
                 State previousState = state;
-                int error = 0;
                 switch (state) {
                     case NOT_SHARED:
                         // todo: delete
@@ -246,15 +265,9 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                                 owner = client;
                         }
                         break;
-//                    case OWNERSHIP_CHANGE:
-//                        System.out.println("Owner change required");
-//                        synchronized (monitor1) {
-//                            monitor1.wait();
-//                        }
-//                        System.out.println("write request unlocked");
                     case WRITE_SHARED:
                         // todo: delete
-//                        System.out.println("download state write shared");
+
                         removeReader(client);
                         if (mode.equals("r"))
                             readers.add(client);
@@ -264,9 +277,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                             System.out.println("from " + owner + " write back is requested");
                             currentOwner.writeback(); // requesting write back from the client
 
-                            // if it is the owner, it will send always true....
-                            // todo: suspend at this moment (wait), and once gets the ownership,
-//                            System.out.println("write shared on write mode");
                             synchronized (monitor2) {
                                 monitor2.wait();
                             }
@@ -287,7 +297,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                     }
                 }
 
-
                 return contents;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -301,8 +310,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
          * @return
          */
         public boolean upload(String client, FileContents contents) {
-            // todo: validation check
-            // todo: delete
             System.out.println("upload is called");
 
             try {
@@ -321,6 +328,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 readers.removeAllElements();
 
                 State prev_state = state;
+
                 // save file contents
                 bytes = contents.get();
                 System.out.println("bytes written = " + new String(bytes));
@@ -328,7 +336,6 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                 // state transition
                 switch (state) {
                     case WRITE_SHARED:
-//                        System.out.println("From write shared to not_share, and writing file");
                         state = State.NOT_SHARED;
                         owner = null;
                         writeFile();
