@@ -92,9 +92,11 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
             System.out.println("Continue DFS? (y | n)");
             if (input.nextLine().toLowerCase().startsWith("n")) {
                 if (this.currentState == State.WRITE_OWNED) {
-                    this.saveStateToServer();
+                    System.out.println("Latest change has been uploaded to the server");
+		    this.saveStateToServer();
                 }
-                return;
+		System.out.println("Program Closed");
+                System.exit(0);
             }
         }
     }

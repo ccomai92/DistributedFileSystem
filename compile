@@ -1,13 +1,8 @@
 #!/bin/sh
 
-rm -f *~
-rm -f *.class
-echo "client compilation"
-javac FileClient.java
-rmic FileClient
+(rm -f *~ & rm -f *.class) ;
+echo "client server compilation"
+(javac FileClient.java & javac FileServer.java);
+(rmic FileClient & rmic FileServer);
 echo "done"
 
-echo "server compilation"
-javac FileServer.java
-rmic FileServer
-echo "done"
