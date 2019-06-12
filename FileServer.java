@@ -209,7 +209,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
                         // todo: delete later
                         System.out.println("wait state for ownershiop change");
 //                        state.wait();
-                        monitor2.wait();
+                        monitor1.wait();
                         System.out.println("Wait state released");
                     }
                 }
