@@ -109,7 +109,6 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
                     System.out.println("uplodaing");
                     boolean success;
                     success = this.serverObject.upload(this.localHost, this.fileName, currentContent);
-
                     System.out.println("upload success? " + success);
 
                     // set state to invalid so client can download desired file from server
@@ -239,7 +238,9 @@ public class FileClient extends UnicastRemoteObject implements ClientInterface {
 
                 // upload changes to the server
                 FileContents currentContent = new FileContents(Files.readAllBytes(this.file.toPath()));
-                this.serverObject.upload(this.localHost, this.fileName, currentContent);
+                System.out.println("uplodaing");
+                boolean success = this.serverObject.upload(this.localHost, this.fileName, currentContent);
+                System.out.println("upload success? " + success);
 
                 // set state to read_shared
                 this.currentState = State.READ_SHARED;
